@@ -34,9 +34,6 @@ GetOptions
     "source=s"      => \$SOURCE     ,
     "min-length=s"  => \$MIN_LENGTH ,
     "info=s"        => \$INFO_FILE  ,
-    "atv"           => \$ATV        ,
-    "ipad"          => \$IPAD       ,
-    "hq"            => \$HQ         ,
     "title-num=s"   => \$TITLE_NUM  ,
     "rip-path=s"    => \$RIP_PATH   ,
     "rip-longest"   => \$RIP_LONGEST,
@@ -48,16 +45,6 @@ init();
 selectTitles();
 prepare();
 ripTitles();
-
-#
-# Optional MP4 reencoding.
-#
-#                 Handbrake       Filename
-#                 Preset          Suffix
-#
-mkv2mp4($mkvFile, "AppleTV"     , "atv")  if ($ATV);
-mkv2mp4($mkvFile, "iPad"        , "ipad") if ($IPAD);
-mkv2mp4($mkvFile, "High Profile", "hq")   if ($HQ);
 
 ################################################################################
 
@@ -190,31 +177,5 @@ sub ripTitles
                  $TITLES_TO_RIP{$titleNum}->{'DST_FILE'});
         }
     }
-}
-
-#
-# Use Handbrake to encode a MKV file in MP4 format.
-# 
-# @param[in]  mkvFile  Pathname of MKV file to encode.
-# @param[in]  preset   Handbrake preset to use for encoding.
-# @param[in]  suffix
-#     Suffix to add to the MKV filename to create the MP4 filename.
-#
-sub mkv2mp4
-{
-    my ($mkvFile, $preset, $suffix) = @_;
-    my $mp4File = $mkvFile;
-    $mp4File =~ s/\.mkv$/-$suffix\.mp4/g;
-    
-    my $cmd = join(" ",
-    (
-        $HANDBRAKE             ,
-        "--preset=\"$preset\"" ,
-        "--input  \"$mkvFile\"",
-        "--output \"$mp4File\"",
-    ));
-
-    print "::$cmd\n";
-    system($cmd);
 }
 
